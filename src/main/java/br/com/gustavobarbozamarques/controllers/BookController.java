@@ -32,8 +32,8 @@ public class BookController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "Success")
     })
-    public List<BookDTO> all() {
-        return bookService.all();
+    public List<BookDTO> getAll() {
+        return bookService.getAll();
     }
 
     @GetMapping("/{id}")

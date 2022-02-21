@@ -5,6 +5,9 @@ import br.com.gustavobarbozamarques.entity.Book;
 import br.com.gustavobarbozamarques.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,7 +23,9 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public List<BookDTO> all() {
+    @Cacheable(value = "books_getAll")
+    public List<BookDTO> getAll() {
+        log.info("Executing method getAll()");
         return bookRepository.findAll()
                 .stream()
                 .map(book -> BookDTO.builder()
@@ -31,7 +36,9 @@ public class BookService {
                 ).collect(Collectors.toList());
     }
 
+    @Cacheable(value = "books_getById", key = "#id")
     public BookDTO getById(Integer id) {
+        log.info("Executing method getById({})", id);
         var book = bookRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found."));
 
@@ -42,7 +49,9 @@ public class BookService {
                 .build();
     }
 
+    @CacheEvict(value = "books_getAll", allEntries = true)
     public void save(BookDTO bookDTO) {
+        log.info("Executing method save({})", bookDTO);
         var book = Book.builder()
                 .author(bookDTO.getAuthor())
                 .title(bookDTO.getTitle())
@@ -51,7 +60,11 @@ public class BookService {
         bookRepository.save(book);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "books_getAll", allEntries = true),
+            @CacheEvict(value = "books_getById", key = "#bookDTO.id")})
     public void update(BookDTO bookDTO) {
+        log.info("Executing method update({})", bookDTO);
         var book = bookRepository.findById(bookDTO.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found."));
         book.setTitle(bookDTO.getTitle());
@@ -60,7 +73,11 @@ public class BookService {
         bookRepository.save(book);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "books_getAll", allEntries = true),
+            @CacheEvict(value = "books_getById", key = "#id")})
     public void delete(Integer id) {
+        log.info("Executing method delete({})", id);
         bookRepository.deleteById(id);
     }
 }
