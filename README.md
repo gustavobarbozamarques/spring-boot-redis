@@ -8,7 +8,7 @@ This project demonstrates a simple microservice that uses Spring Boot and Redis.
 
 ``` docker-compose up ``` 
 
-#####Swagger:
+##### Swagger:
 
 Access Swagger and create same books: ``` http://localhost:8080/swagger-ui.html ```
 
@@ -16,7 +16,7 @@ Access Swagger and create same books: ``` http://localhost:8080/swagger-ui.html 
 
 ![Alt text](docs/books.png?raw=true "Books")
 
-#####Redis Insight (GUI for Redis):
+##### Redis Insight (GUI for Redis):
  
 Go to ``` http://localhost:8001 ```
 
