@@ -49,7 +49,7 @@ public class BookService {
                 .build();
     }
 
-    @CacheEvict(value = "books", allEntries = true)
+    @CacheEvict(value = "books", key = "'all'")
     public void save(BookDTO bookDTO) {
         log.info("Executing method save({})", bookDTO);
         var book = Book.builder()
