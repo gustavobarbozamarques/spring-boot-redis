@@ -23,7 +23,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    @Cacheable(value = "books_getAll")
+    @Cacheable(value = "books", key = "'all'")
     public List<BookDTO> getAll() {
         log.info("Executing method getAll()");
         return bookRepository.findAll()
@@ -36,7 +36,7 @@ public class BookService {
                 ).collect(Collectors.toList());
     }
 
-    @Cacheable(value = "books_getById", key = "#id")
+    @Cacheable(value = "books", key = "#id")
     public BookDTO getById(Integer id) {
         log.info("Executing method getById({})", id);
         var book = bookRepository.findById(id)
@@ -49,7 +49,7 @@ public class BookService {
                 .build();
     }
 
-    @CacheEvict(value = "books_getAll", allEntries = true)
+    @CacheEvict(value = "books", allEntries = true)
     public void save(BookDTO bookDTO) {
         log.info("Executing method save({})", bookDTO);
         var book = Book.builder()
@@ -61,8 +61,8 @@ public class BookService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "books_getAll", allEntries = true),
-            @CacheEvict(value = "books_getById", key = "#bookDTO.id")})
+            @CacheEvict(value = "books", key = "'all'"),
+            @CacheEvict(value = "books", key = "#bookDTO.id")})
     public void update(BookDTO bookDTO) {
         log.info("Executing method update({})", bookDTO);
         var book = bookRepository.findById(bookDTO.getId())
@@ -74,8 +74,8 @@ public class BookService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "books_getAll", allEntries = true),
-            @CacheEvict(value = "books_getById", key = "#id")})
+            @CacheEvict(value = "books", key = "'all'"),
+            @CacheEvict(value = "books", key = "#id")})
     public void delete(Integer id) {
         log.info("Executing method delete({})", id);
         bookRepository.deleteById(id);
