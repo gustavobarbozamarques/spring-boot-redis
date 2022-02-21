@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  app:
+    image: 'spring-boot-redis'
+    build:
+      context: .
+    container_name: spring-boot-redis
+    ports:
+      - 8080:8080
+    depends_on:
+      - redis
+      - redisinsight
+    environment:
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+    networks:
+      - spring-boot-redis-network
+
+  redis:
+    image: 'redis'
+    ports:
+      - 6379:6379
+    networks:
+      - spring-boot-redis-network
+
+  #GUI Explorer for Redis
+  redisinsight:
+    image: 'redislabs/redisinsight:latest'
+    ports:
+      - 8001:8001
+    depends_on:
+      - redis
+    networks:
+      - spring-boot-redis-network
+
+networks:
+  spring-boot-redis-network:
+    driver: bridge
